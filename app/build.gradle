@@ -30,6 +30,6 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation project(':butterknife-annotation')
     implementation project(':butterknife')
-    annotationProcessor project(':butterknife-processor')
+    annotationProcessor project(':butterknife-processor')//注解处理器
 
 }

@@ -53,8 +53,6 @@ import static javax.lang.model.element.Modifier.STATIC;
 public class ButterKnifeProcessor extends AbstractProcessor {
 
     static final String VIEW_TYPE = "android.view.View";
-    static final int NO_RES_ID = -1;
-    static final Id NO_ID = new Id(NO_RES_ID);
     static final ClassName UTILS = ClassName.get("com.fei.butterknife", "Utils");
     static final ClassName UNBINDER = ClassName.get("com.fei.butterknife", "UnBinder");
     static final ClassName UI_THREAD =
@@ -115,7 +113,7 @@ public class ButterKnifeProcessor extends AbstractProcessor {
     }
 
     /**
-     * 需要拦截的annotation
+     * 支持的annotation
      *
      * @return
      */
@@ -276,23 +274,18 @@ public class ButterKnifeProcessor extends AbstractProcessor {
             //所有该类下的BindView注解的属性
             List<Element> values = entry.getValue();
             //创建类 public final class xxxActivity_ViewBind implements Unbind
-            TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(clazzName).
-                    addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                    .addSuperinterface(UNBINDER);
+            TypeSpec.Builder typeBuilder = createType(clazzName);
+            //Activity作为参数类型
             TypeName parameter = TypeName.get(enclosingElement.asType());
             //添加属性 private xxxActivity target;
             FieldSpec.Builder targetField = FieldSpec.builder(parameter, "target", PRIVATE);
             //创建构造函数 public xxActivity_ViewBind(Activity target)
-            MethodSpec.Builder constructorMethod = MethodSpec.constructorBuilder()
-                    .addParameter(parameter, "target", Modifier.FINAL)
-                    .addAnnotation(UI_THREAD)
-                    .addModifiers(PUBLIC);
+            MethodSpec.Builder constructorMethod = createConstructor(parameter);
             //创建unbind方法
             MethodSpec.Builder bindingUnbindMethod = createBindingUnbindMethod();
             bindingUnbindMethod.addStatement("if (this.target == null) throw new IllegalStateException(\"Bindings already cleared.\")");
             //构造函数添加语句
             constructorMethod.addStatement("this.target = target");
-
             for (Element element : values) {
                 //添加findViewById
                 String fieldName = element.getSimpleName().toString();
@@ -305,7 +298,7 @@ public class ButterKnifeProcessor extends AbstractProcessor {
                 //unbind方法添加语句
                 bindingUnbindMethod.addStatement("this.target.$L = null", fieldName);
             }
-            //
+            //unbind方法添加语句
             bindingUnbindMethod.addStatement("this.target = null");
             //添加属性
             typeBuilder.addField(targetField.build());
@@ -324,6 +317,26 @@ public class ButterKnifeProcessor extends AbstractProcessor {
 
         }
         return false;
+    }
+
+    /**
+     * 创建类
+     */
+    private TypeSpec.Builder createType(String clazzName) {
+       return TypeSpec.classBuilder(clazzName).
+                addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                .addSuperinterface(UNBINDER);
+    }
+
+    /**
+     * 创建构造函数
+     * @return
+     */
+    private MethodSpec.Builder createConstructor(TypeName parameter) {
+       return MethodSpec.constructorBuilder()
+                .addParameter(parameter, "target", Modifier.FINAL)
+                .addAnnotation(UI_THREAD)
+                .addModifiers(PUBLIC);
     }
 
     /**

@@ -7,7 +7,7 @@ dependencies {
     implementation deps.javapoet
     implementation deps.auto.service
     annotationProcessor deps.auto.service //需要添加service的注解处理器，不然ButterKnifeProcessor不起作用
-    compileOnly files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
+    compileOnly files(org.gradle.internal.jvm.Jvm.current().getToolsJar()) //处理生产Id
 }
 
 sourceCompatibility = "1.8"
