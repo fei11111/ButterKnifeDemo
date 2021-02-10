@@ -1,0 +1,18 @@
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(path: ':butterknife-annotation')
+    implementation deps.auto.common
+    implementation deps.javapoet
+    implementation deps.auto.service
+    annotationProcessor deps.auto.service //需要添加service的注解处理器，不然ButterKnifeProcessor不起作用
+    compileOnly files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
+}
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
