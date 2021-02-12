@@ -10,21 +10,11 @@ buildscript {
         // in the individual module build.gradle files
     }
 
-    ext.versions = [
-            'incap' : '0.2',
-
-    ]
-
     ext.deps = [
             javapoet: 'com.squareup:javapoet:1.10.0',
             'auto': [
                     'service': 'com.google.auto.service:auto-service:1.0-rc4',
                     'common': 'com.google.auto:auto-common:0.10',
-            ],
-            'guava': 'com.google.guava:guava:24.0-jre',
-            'incap': [
-                    'runtime': "net.ltgt.gradle.incap:incap:${versions.incap}",
-                    'processor': "net.ltgt.gradle.incap:incap-processor:${versions.incap}",
             ]
     ]
 }
